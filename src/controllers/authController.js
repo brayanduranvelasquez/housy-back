@@ -13,16 +13,33 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.validateToken = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    console.log('alguien se logueo');
-    const userCredential = await admin.auth().getUserByEmail(email);
-    // In a real-world scenario, you'd verify the password here
-    // For demo purposes, we're just checking if the user exists
-    const token = await admin.auth().createCustomToken(userCredential.uid);
-    res.json({ token });
+    const { token } = req.body;
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    if (decodedToken) {
+      res.status(200).json({ message: 'Token is valid' });
+      return;
+    }
+
+    res.status(401).json({ message: 'Invalid token' });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.login = async (req, res, next) => {
+  try {
+    // need to improve logic :)
+    const { email, password } = req.body;
+    const userRecord = await admin.auth().getUserByEmail(email);
+    const customToken = await admin.auth().createCustomToken(userRecord.uid);
+
+    res.json({ token: customToken });
+  } catch (error) {
+    console.error('Login Error:', error);
+    res.status(401).json({ message: 'Login Error' });
   }
 };

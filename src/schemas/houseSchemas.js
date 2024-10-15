@@ -5,6 +5,7 @@ exports.createHouseSchema = Joi.object({
   description: Joi.string().required(),
   price: Joi.number().positive().required(),
   location: Joi.string().required(),
+  image: Joi.string().required(),
   categoryId: Joi.string().required(),
 });
 
@@ -13,5 +14,6 @@ exports.updateHouseSchema = Joi.object({
   description: Joi.string(),
   price: Joi.number().positive(),
   location: Joi.string(),
+  image: Joi.string().required(),
   categoryId: Joi.string(),
 }).min(1);
